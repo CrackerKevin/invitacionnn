@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis 18 - Invitación Épica</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root { --neon: #00f2ff; --pink: #ff007f; --gold: #ffd700; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; font-family: 'Impact', sans-serif; background: #000; color: white; }
+
+        #main-container { height: 400vh; transition: transform 1s cubic-bezier(0.65, 0, 0.35, 1); }
+        .section { height: 100vh; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; position: relative; box-sizing: border-box; }
+
+        .portada { background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('foto.jpeg'); background-size: cover; background-position: center; }
+
+        #overlay-18 { position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: none; justify-content: center; align-items: center; z-index: 1000; pointer-events: none; }
+        .numero-18 { font-size: 15rem; color: white; text-shadow: 0 0 20px var(--neon), 0 0 50px var(--pink); transform: scale(0) rotateY(180deg); }
+        @keyframes volar18 { 0% { transform: scale(0) rotateY(180deg); opacity: 0; } 50% { transform: scale(1.2) rotateY(0deg); opacity: 1; } 100% { transform: scale(6) rotateY(0deg); opacity: 0; } }
+
+        .neon-box { position: relative; display: flex; justify-content: center; align-items: center; background: #000; border-radius: 15px; overflow: hidden; margin: 8px; text-decoration: none; border: none; cursor: pointer; width: 280px; flex-shrink: 0; }
+        .neon-box::before { content: ''; position: absolute; width: 150%; height: 500%; background: linear-gradient(var(--neon), var(--pink), var(--neon)); animation: girar 3s linear infinite; }
+        .neon-box::after { content: ''; position: absolute; inset: 4px; background: #000; border-radius: 11px; z-index: 0; }
+        .content { position: relative; z-index: 1; padding: 12px; color: white; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
+        @keyframes girar { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        /* CONTADOR */
+        #contador { display: flex; justify-content: center; gap: 5px; align-items: center; }
+        .time-unit { background: rgba(255, 255, 255, 0.05); padding: 5px; border-radius: 8px; min-width: 50px; border: 1px solid rgba(0, 242, 255, 0.2); }
+        .time-val { font-size: 1.5rem; color: var(--neon); text-shadow: 0 0 10px var(--neon); display: block; }
+        .time-label { font-size: 0.5rem; color: #aaa; }
+        .dots { color: var(--pink); font-size: 1.2rem; animation: blink 1s infinite; }
+
+        /* VIDEO CORREGIDO PARA NO BLOQUEAR */
+        #video-panel { display: none; width: 260px; max-height: 40vh; margin: 10px 0; overflow: hidden; }
+        video { border-radius: 15px; box-shadow: 0 0 20px var(--pink); width: 100%; max-height: 100%; }
+
+        .detalles, .musico-section, .regalo-section { background: #050505; }
+        .wrapper-detalles { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; overflow-y: auto; }
+
+        /* FOTO MÚSICO ACTUALIZADA */
+        .foto-musico { width: 280px; height: 280px; border-radius: 20px; border: 3px solid #fff; box-shadow: 0 0 20px var(--neon); object-fit: cover; margin: 15px 0; }
+        .titulo-photoshop { font-size: 2.8rem; background: linear-gradient(#fff, var(--neon)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 10px var(--neon)); margin: 0; }
+
+        .regalo-titulo {
+            font-size: 3.5rem;
+            background: linear-gradient(45deg, #fff, #ffd700, #fff, #ff007f);
+            background-size: 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: brilloGiro 3s linear infinite, rotar3D 5s infinite alternate ease-in-out;
+            filter: drop-shadow(0 0 15px var(--gold));
+            margin-bottom: 30px;
+        }
+
+        .no-faltes { font-size: 3rem; color: #fff; text-shadow: 0 0 10px var(--neon), 0 0 40px var(--pink); animation: pulse 1.5s infinite; }
+        .btn-volver { background: none; border: 1px solid #333; color: #666; padding: 10px 20px; border-radius: 30px; margin-top: 20px; cursor: pointer; text-transform: uppercase; font-size: 0.8rem; }
+
+        @keyframes brilloGiro { 0% { background-position: 0%; } 100% { background-position: 300%; } }
+        @keyframes rotar3D { from { transform: rotateY(-20deg); } to { transform: rotateY(20deg); } }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+    </style>
+</head>
+<body>
+
+    <div id="overlay-18"> <div class="numero-18" id="num-animado">18</div> </div>
+
+    <div id="main-container">
+        <!-- PESTAÑA 1 -->
+        <section class="section portada">
+            <div class="neon-box" style="width: auto; max-width: 90%;">
+                <div class="content"><h1>¡ESTÁS INVITADO A MI CUMPLEAÑOS NÚMERO 18!</h1></div>
+            </div>
+            <button class="neon-box" onclick="iniciarInvitacion()" style="margin-top: 40px; width: 220px;">
+                <div class="content" style="font-size: 1.5rem;">ENTRAR</div>
+            </button>
+        </section>
+
+        <!-- PESTAÑA 2 -->
+        <section class="section detalles">
+            <div class="wrapper-detalles">
+                <div class="neon-box" style="width: 300px; margin-bottom: 20px;">
+                    <div class="content">
+                        <div id="contador">
+                            <div class="time-unit"><span class="time-val" id="days">00</span><span class="time-label">DÍAS</span></div>
+                            <div class="dots">:</div>
+                            <div class="time-unit"><span class="time-val" id="hours">00</span><span class="time-label">HRS</span></div>
+                            <div class="dots">:</div>
+                            <div class="time-unit"><span class="time-val" id="minutes">00</span><span class="time-label">MIN</span></div>
+                            <div class="dots">:</div>
+                            <div class="time-unit"><span class="time-val" id="seconds">00</span><span class="time-label">SEG</span></div>
+                        </div>
+                    </div>
+                </div>
+                <a href="https://maps.google.com/?q=28.806263,-105.967743" class="neon-box"><div class="content">📍 GOOGLE MAPS</div></a>
+                <div class="neon-box" onclick="toggleVideo()"><div class="content">🎬 CÓMO LLEGAR (VIDEO)</div></div>
+                
+                <div id="video-panel">
+                    <video id="videoUbicacion" controls playsinline muted>
+                        <source src="ubicacion.mov" type="video/quicktime">
+                        <source src="ubicacion.mp4" type="video/mp4">
+                    </video>
+                </div>
+
+                <a href="https://wa.me/526141864731?text=CONFIRMO%20MI%20ASISTENCIA" class="neon-box"><div class="content">✅ CONFIRMAR ASISTENCIA</div></a>
+                <button class="neon-box" onclick="irASeccion(2)" style="margin-top: 10px;"><div class="content" style="color:var(--pink)">SIGUIENTE →</div></button>
+                <button class="btn-volver" onclick="irASeccion(0)">VOLVER</button>
+            </div>
+        </section>
+
+        <!-- PESTAÑA 3 -->
+        <section class="section musico-section">
+            <div class="wrapper-detalles">
+                <h1 class="titulo-photoshop" style="margin-bottom: 10px;">PRIMERA UNION</h1>
+                <!-- SRC CAMBIADO A musico.jpeg -->
+                <img src="musico.jpeg" alt="Músico" class="foto-musico">
+                <div style="font-size: 1.2rem; text-shadow: 0 0 10px var(--pink); color: #fff; width: 80%;">GRUPO QUE ESTARÁ AMENIZANDO EL EVENTO</div>
+                <button class="neon-box" onclick="irASeccion(3)" style="margin-top: 20px;"><div class="content" style="color:var(--gold)">SIGUIENTE →</div></button>
+                <button class="btn-volver" onclick="irASeccion(1)">VOLVER</button>
+            </div>
+        </section>
+
+        <!-- PESTAÑA 4 -->
+        <section class="section regalo-section">
+            <div class="wrapper-detalles">
+                <div class="regalo-titulo">REGALO EN EFECTIVO</div>
+                <div class="no-faltes">NO FALTES</div>
+                <button class="btn-volver" onclick="irASeccion(0)" style="margin-top: 60px; color: #fff; border-color: var(--neon);">VOLVER AL INICIO</button>
+            </div>
+        </section>
+    </div>
+
+    <audio id="musica" loop> <source src="musica.mp3" type="audio/mpeg"> </audio>
+
+    <script>
+        const targetDate = new Date("June 27, 2026 19:00:00").getTime();
+        setInterval(() => {
+            const now = new Date().getTime();
+            const diff = targetDate - now;
+            if (diff > 0) {
+                document.getElementById("days").innerText = String(Math.floor(diff / (1000 * 60 * 60 * 24))).padStart(2, '0');
+                document.getElementById("hours").innerText = String(Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, '0');
+                document.getElementById("minutes").innerText = String(Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
+                document.getElementById("seconds").innerText = String(Math.floor((diff % (1000 * 60)) / 1000)).padStart(2, '0');
+            }
+        }, 1000);
+
+        function iniciarInvitacion() {
+            document.getElementById("musica").play();
+            var overlay = document.getElementById("overlay-18");
+            overlay.style.display = "flex";
+            document.getElementById("num-animado").style.animation = "volar18 1.5s forwards";
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#00f2ff', '#ff007f', '#ffffff'] });
+            setTimeout(() => { irASeccion(1); }, 800);
+            setTimeout(() => { overlay.style.display = "none"; }, 2000);
+        }
+
+        function irASeccion(index) {
+            const pos = index * -25;
+            document.getElementById("main-container").style.transform = `translateY(${pos}%)`;
+        }
+
+        function toggleVideo() {
+            var panel = document.getElementById("video-panel");
+            var video = document.getElementById("videoUbicacion");
+            if (panel.style.display === "none" || panel.style.display === "") {
+                panel.style.display = "block";
+                video.play();
+            } else {
+                panel.style.display = "none";
+                video.pause();
+            }
+        }
+    </script>
+</body>
+</html>
